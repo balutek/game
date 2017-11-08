@@ -3,6 +3,7 @@ import {AfterViewInit, Component} from '@angular/core';
 import * as Phaser from 'phaser-ce';
 
 import * as _ from 'lodash';
+import {Game} from "./game/objects/Game";
 
 @Component({
   selector: 'app-root',
@@ -11,14 +12,15 @@ import * as _ from 'lodash';
 })
 export class AppComponent implements AfterViewInit {
 
+  spaceButton: Phaser.Key;
   player: Phaser.Sprite;
-  game: Phaser.Game;
+  game: Game;
   ball: Phaser.Sprite;
   cursor: Phaser.CursorKeys;
 
   ngAfterViewInit(): void {
     let component = this;
-    this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', {
+    this.game = new Game('game', {
       preload: () => this.preload.call(component),
       create: () => this.create.call(component),
       update: () => this.update.call(component),
@@ -26,29 +28,47 @@ export class AppComponent implements AfterViewInit {
   }
 
   preload(this: AppComponent): void {
-    this.game.load.image('ball', 'assets/ball_small.png');
-    this.game.load.image('arrowUp', 'assets/arrow_up.png');
+    this.game.getLoader().image('ball', 'assets/ball_small.png');
+    this.game.getLoader().image('player', 'assets/kao2.png');
   }
 
   create(this: AppComponent): void {
-    this.game.world.setBounds(0, 0, 800, 600);
-    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    this.game.create();
+    // let playerCollisionGroup = this.game.game.physics.p2.createCollisionGroup();
+    // let ballCollisionGroup = this.game.game.physics.p2.createCollisionGroup();
 
-    this.game.stage.backgroundColor = '#4dbd33';
-
-    this.ball = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'ball');
-    this.game.physics.p2.enable(this.ball);
+    this.ball = this.game.game.add.sprite(this.game.game.world.centerX, this.game.game.world.centerY, 'ball');
+    this.game.game.physics.p2.enable(this.ball);
     this.ball.body.setCircle(18);
+    // this.ball.checkWorldBounds = true;
+    // this.ball.body.setCollisionGroup(ballCollisionGroup);
+    // this.ball.body.collides(playerCollisionGroup);
 
-    this.player = this.game.add.sprite(this.game.world.centerX+50, this.game.world.centerY, 'arrowUp');
-    this.game.physics.p2.enable(this.player);
-    this.player.body.setRectangle(48, 48);
+    this.player = this.game.game.add.sprite(this.game.game.world.centerX+50, this.game.game.world.centerY, 'player');
+    this.game.game.physics.p2.enable(this.player);
+    this.playerBody().mass = 10;
+    this.playerBody().setCircle(24);
+    this.playerBody().collides(this.game.game.physics.p2.everythingCollisionGroup);
+    // this.player.checkWorldBounds = true;
+    // this.playerBody().setCollisionGroup(playerCollisionGroup);
+    // this.playerBody().collides(ballCollisionGroup);
+    this.playerBody().onBeginContact.add(this.touchBall, this);
 
-    this.cursor = this.game.input.keyboard.createCursorKeys();
+    // this.game.game.physics.p2.boundsCollidesWith
+
+    this.cursor = this.game.game.input.keyboard.createCursorKeys();
+    this.spaceButton = this.game.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  }
+
+  touchBall(player : Phaser.Physics.P2.Body, ball : any, sth: any, sth1: any, sth2: any): void {
+    if(this.spaceButton.isDown) {
+      console.log(player, ball, sth, sth2, sth2);
+      // ball.applyForce([1], 100, 100);
+    }
   }
 
   render(this: AppComponent): void {
-    // this.game.debug.geom(this.ball, '#fffff');
+    // this.game.game.debug.geom(this.ball, '#fffff');
   }
 
   update(this: AppComponent): void {
@@ -57,8 +77,9 @@ export class AppComponent implements AfterViewInit {
     const desiredAngle = this.calculateDesiredAngle();
 
     if (desiredAngle) {
+      this.playerBody().setZeroRotation();
       this.playerBody().angle += this.calculateAngleChange(currentAngle, desiredAngle.angle);
-      this.playerBody().thrust(100);
+      this.playerBody().thrust(1000);
     }
   }
 
