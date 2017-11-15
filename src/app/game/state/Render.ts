@@ -1,3 +1,3 @@
 export interface Render {
-  render(): void;
+  onRender(): void;
 }

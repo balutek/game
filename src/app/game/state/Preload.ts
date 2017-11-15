@@ -1,3 +1,3 @@
 export interface Preload {
-  preload(): void;
+  onPreload(): void;
 }

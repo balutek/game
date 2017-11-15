@@ -1,3 +1,3 @@
 export interface Create {
-  create(): void;
+  onCreate(): void;
 }
