@@ -28,4 +28,8 @@ export class Ball extends BasicObject implements Preload, Create {
     return this.ballSprite.body;
   }
 
+  kick(): void {
+    this.getBody().applyImpulseLocal([10, 10], 0, 0);
+  }
+
 }

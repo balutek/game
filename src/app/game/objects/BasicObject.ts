@@ -29,7 +29,10 @@ export abstract class BasicObject implements Collidable {
   }
 
   collidesWith(collidable: Collidable) {
-    this.getBody().collides(collidable.getCollisionGroup());
+    this.getBody().collides(collidable.getCollisionGroup(), () => this.onCollision(collidable));
   }
 
+  onCollision(collided: Collidable): void {
+    // noop
+  }
 }

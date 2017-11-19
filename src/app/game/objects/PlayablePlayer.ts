@@ -21,13 +21,17 @@ export class PlayablePlayer extends Player implements Update {
   ];
 
   private cursor: Phaser.CursorKeys;
+  private spacebar: Phaser.Key;
 
   onCreate(): void {
     super.onCreate();
     this.cursor = this.game.getCursorKeys();
+    this.spacebar = this.game.getSpaceBarKey();
   }
 
   onUpdate(): void {
+    this.isShooting = this.spacebar.isDown;
+
     const currentAngle = this.getBody().angle;
     const desiredAngle = this.calculateDesiredAngle();
 
@@ -58,4 +62,5 @@ export class PlayablePlayer extends Player implements Update {
       return Math.min(5, Math.abs(diff)) * Math.sign(diff);
     }
   }
+
 }
