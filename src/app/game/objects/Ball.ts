@@ -1,28 +1,31 @@
 import * as Phaser from 'phaser-ce';
 
-import {Game} from "./Game";
-
 import {Create} from "../state/Create";
 import {Preload} from "../state/Preload";
+import {BasicObject} from "./BasicObject";
 
-export class Ball implements Preload, Create {
+export class Ball extends BasicObject implements Preload, Create {
 
   private imageKey: string = 'ball';
 
   private ballSprite: Phaser.Sprite;
-
-  constructor(private game: Game) {
-  }
 
   onPreload(): void {
     this.game.getLoader().image(this.imageKey, '../assets/ball_small.png');
   }
 
   onCreate(): void {
-    this.ballSprite = this.game.game.add.sprite(this.game.game.world.centerX, this.game.game.world.centerY, this.imageKey);
+    this.ballSprite = this.game.addSprite(this.startX, this.startY, this.imageKey);
     this.game.getPhysics().enable(this.ballSprite);
-    this.ballSprite.body.setCircle(18);
-    // this.ball.body.setCollisionGroup(ballCollisionGroup);
-    this.ballSprite.body.collides(this.game.getPhysics().everythingCollisionGroup);
+
+    this.getBody().setCircle(18);
+    this.getBody().mass = 1;
+
+    this.initCollisionGroup();
   }
+
+  getBody(): Phaser.Physics.P2.Body {
+    return this.ballSprite.body;
+  }
+
 }
