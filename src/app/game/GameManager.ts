@@ -28,10 +28,6 @@ export class GameManager {
     this.ball.onPreload();
     this.player.onPreload();
     this.playablePlayer.onPreload();
-  }
-
-  create(this: GameManager): void {
-    this.game.onCreate();
 
     let centerX = this.game.getWorld().centerX;
     let centerY = this.game.getWorld().centerY;
@@ -39,6 +35,10 @@ export class GameManager {
     this.ball.setInitialiPosition(centerX, centerY);
     this.player.setInitialiPosition(centerX + 50, centerY);
     this.playablePlayer.setInitialiPosition(centerX + 50, centerY - 50);
+  }
+
+  create(this: GameManager): void {
+    this.game.onCreate();
 
     this.ball.onCreate();
     this.player.onCreate();
